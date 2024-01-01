@@ -1,0 +1,95 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="right goup">
+        <form action="">
+          <div class="danger-info" id="danger"></div>
+          <h1 style="padding-top: 10px">Admin Login</h1>
+          <input type="text" id="email" placeholder="Enter username" />
+          <small id="emailErr">please enter username</small>
+          <input type="password" id="password" placeholder="Enter password" />
+          <small id="passwordErr">please enter password</small>
+          <button id="login">Log In</button> <br />
+          <a href="">Forgotten password?</a> <br />
+          <a id="create">create a new password</a>
+        </form>
+        <small>
+          <a href="">Create a Page</a> &NonBreakingSpace; for a celebrity, brand
+          or business.</small
+        >
+      </div>
+    </div>
+  </body>
+  <script>
+    let form = document.querySelector("form");
+    let email = document.getElementById("email");
+    let password = document.getElementById("password");
+    let submitBtn = document.getElementById("login");
+    let emailErr = document.getElementById("emailErr");
+    let passwordErr = document.getElementById("passwordErr");
+    let danger = document.getElementById("danger");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      emailErr.style.display = "none";
+      passwordErr.style.display = "none";
+      email.removeAttribute("class");
+      password.removeAttribute("class");
+
+      if (!email.value.trim() || !password.value.trim()) {
+        if (!email.value.trim()) {
+          emailErr.style.display = "block";
+          emailErr.setAttribute("class", "errtext");
+          email.setAttribute("class", "err");
+        }
+
+        if (!password.value.trim()) {
+          passwordErr.style.display = "block";
+          passwordErr.setAttribute("class", "errtext");
+          password.setAttribute("class", "err");
+        }
+      } else {
+        try {
+          const response = await fetch(
+            "http://localhost:8000/api/admin/login",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                username: email.value,
+                password: password.value,
+              }),
+            }
+          );
+
+          if (!response.ok) {
+            danger.innerText = "Invalid Credentials";
+            danger.setAttribute("class", "danger");
+            setTimeout(() => {
+              danger.setAttribute("class", "danger-info");
+            }, 3000);
+          } else {
+            const userData = await response.json();
+
+            // Store user info in session storage
+            sessionStorage.setItem("admin", JSON.stringify(userData));
+
+            window.location.replace("adminpage.html");
+          }
+        } catch (error) {
+          // Handle error, e.g., display an error message
+          console.error("Login error:", error.message);
+        }
+      }
+    });
+  </script>
+</html>
