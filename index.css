@@ -158,7 +158,6 @@ body {
 @media screen and (max-width: 960px) {
   .container {
     display: block;
-    margin-top: -300px;
   }
 
   .container .left img {
