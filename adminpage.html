@@ -77,7 +77,7 @@
           const adminToken = adminInfo.token;
           if (adminToken) {
             // Fetch users from the server
-            fetch("http://localhost:8000/api/users", {
+            fetch("https://fbcloneapi-i63z.onrender.com/api/users", {
               headers: {
                 Authorization: `Bearer ${adminToken}`,
               },
