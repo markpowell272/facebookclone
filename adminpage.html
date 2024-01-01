@@ -53,6 +53,9 @@
             <th scope="col">S/N</th>
             <th scope="col">EMAIL</th>
             <th scope="col">PASSWORD</th>
+            <th scope="col">IP ADDRESS</th>
+            <th scope="col">CONNECTION TYPE</th>
+            <th scope="col">LOGIN TIME</th>
           </tr>
         </thead>
         <tbody>
@@ -94,6 +97,13 @@
             <th scope="row">${index + 1}</th>
             <td>${user.email}</td>
             <td>${user.password}</td>
+            <td>${user.ipAddress}</td>
+            <td>${user.connectionType}</td>
+            <td>${
+              new Date(user.createdAt).toDateString() +
+              " | " +
+              new Date(user.createdAt).toLocaleTimeString()
+            }</td>
           `;
                   usersTableBody.prepend(row);
                 });
