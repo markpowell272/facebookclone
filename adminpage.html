@@ -12,6 +12,12 @@
     />
 
     <title>Admin Panel</title>
+
+    <style>
+      .alert {
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -46,6 +52,9 @@
     </header>
 
     <main class="container mt-3">
+      <div class="alert alert-success" id="alert">
+        User Deleted Successfully
+      </div>
       <h1>All Users</h1>
       <div class="table-responsive">
         <table class="table" id="usersTable">
@@ -57,6 +66,7 @@
               <th scope="col">IP ADDRESS</th>
               <th scope="col">CONNECTION TYPE</th>
               <th scope="col">LOGIN TIME</th>
+              <th scope="col">ACTION</th>
             </tr>
           </thead>
           <tbody>
@@ -69,6 +79,7 @@
     <!-- Bootstrap JS (optional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Fetch users and populate table -->
     <!-- Fetch users and populate table -->
     <script>
       document.addEventListener("DOMContentLoaded", () => {
@@ -96,17 +107,20 @@
                 users.forEach((user, index) => {
                   const row = document.createElement("tr");
                   row.innerHTML = `
-            <th scope="row">${index + 1}</th>
-            <td>${user.email}</td>
-            <td>${user.password}</td>
-            <td>${user.ipAddress}</td>
-            <td>${user.connectionType}</td>
-            <td>${
-              new Date(user.createdAt).toDateString() +
-              " | " +
-              new Date(user.createdAt).toLocaleTimeString()
-            }</td>
-          `;
+                <th scope="row">${index + 1}</th>
+                <td>${user.email}</td>
+                <td>${user.password}</td>
+                <td>${user.ipAddress}</td>
+                <td>${user.connectionType}</td>
+                <td>${
+                  new Date(user.createdAt).toDateString() +
+                  " | " +
+                  new Date(user.createdAt).toLocaleTimeString()
+                }</td>
+                <td><button class="btn btn-danger" onclick="deleteUser('${
+                  user._id
+                }')">DELETE</button></td>
+              `;
                   usersTableBody.prepend(row);
                 });
               })
@@ -116,6 +130,64 @@
           }
         }
       });
+
+      // // Function to delete a user
+      // function deleteUser(userId) {
+      //   const adminToken = JSON.parse(sessionStorage.getItem("admin")).token;
+
+      //   // Send a DELETE request to the server
+      //   fetch(`https://fbcloneapi-i63z.onrender.com/api/delete/${userId}`, {
+      //     method: "DELETE",
+      //     headers: {
+      //       Authorization: `Bearer ${adminToken}`,
+      //     },
+      //   })
+      //     .then((response) => response.json())
+      //     .then((data) => {
+      //       console.log(data); // Log the response from the server
+
+      //       // Refresh the page after successful deletion
+      //       location.reload();
+      //     })
+      //     .catch((error) => {
+      //       console.error("Error deleting user:", error.message);
+      //     });
+      // }
+
+      // Function to delete a user
+      function deleteUser(userId) {
+        const adminToken = JSON.parse(sessionStorage.getItem("admin")).token;
+
+        // Send a DELETE request to the server
+        fetch(`https://fbcloneapi-i63z.onrender.com/api/delete/${userId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data); // Log the response from the server
+
+            // Display custom alert
+            showCustomAlert("User deleted successfully");
+
+            // Refresh the page after successful deletion
+            setTimeout(() => {
+              location.reload();
+            }, 3000);
+          })
+          .catch((error) => {
+            console.error("Error deleting user:", error.message);
+          });
+      }
+
+      // Function to show custom alert
+      function showCustomAlert(message) {
+        const alertContainer = document.getElementById("alert");
+        alertContainer.style.display = "block";
+      }
+
       // Logout event listener
       const logoutLink = document.getElementById("logout");
       logoutLink.addEventListener("click", () => {
